@@ -1,1 +1,46 @@
+class LRUCache {
+private:
+    int capacity;
+    list<pair<int, int>> cacheList; // 雙向鏈表，存 (key, value)
+    unordered_map<int, list<pair<int, int>>::iterator> cacheMap; // 哈希表，存 (key, list節點)
+
+public:
+    LRUCache(int capacity) {
+        this->capacity = capacity;
+    }
+
+    int get(int key) {
+        // 若 key 不存在，回傳 -1
+        if (cacheMap.find(key) == cacheMap.end()) {
+            return -1;
+        }
+        
+        // 把這個 key-value 移動到 list 前面（表示最近使用過）
+        auto it = cacheMap[key];
+        int value = it->second;
+        cacheList.erase(it);
+        cacheList.push_front({key, value});
+        cacheMap[key] = cacheList.begin();
+
+        return value;
+    }
+
+    void put(int key, int value) {
+        // 若 key 已存在，刪除舊值
+        if (cacheMap.find(key) != cacheMap.end()) {
+            cacheList.erase(cacheMap[key]);
+        }
+
+        // 把新 key-value 放到 list 前面
+        cacheList.push_front({key, value});
+        cacheMap[key] = cacheList.begin();
+
+        // 如果超過容量，則刪除最久未使用的元素（尾部元素）
+        if (cacheList.size() > capacity) {
+            auto last = cacheList.back();
+            cacheMap.erase(last.first);
+            cacheList.pop_back();
+        }
+    }
+};
 
