@@ -1,13 +1,11 @@
 class LRUCache:
 
     def __init__(self, capacity: int):
-        """初始化 LRU 快取"""
         self.capacity = capacity  # 記住最大容量
         self.cache = {}  # 用來存 key-value
         self.order = []  # 用來記住存取的順序
 
     def get(self, key: int) -> int:
-        """取得值，如果 key 存在，則返回 value，否則返回 -1"""
         if key in self.cache:
             # 先刪除舊的位置，再把 key 放到最前面（代表最近使用）
             self.order.remove(key)
@@ -16,7 +14,6 @@ class LRUCache:
         return -1
 
     def put(self, key: int, value: int) -> None:
-        """插入新值，若超過容量則刪除最舊的 key"""
         if key in self.cache:
             # 如果 key 已經存在，更新值，並且把它移到最近使用
             self.order.remove(key)
