@@ -1,27 +1,30 @@
-from collections import OrderedDict
-
 class LRUCache:
+
     def __init__(self, capacity: int):
-        self.cache = OrderedDict()  # 有序字典來存 key-value
-        self.capacity = capacity    # 記錄快取容量
+        """初始化 LRU 快取"""
+        self.capacity = capacity  # 記住最大容量
+        self.cache = {}  # 用來存 key-value
+        self.order = []  # 用來記住存取的順序
 
     def get(self, key: int) -> int:
-        if key not in self.cache:
-            return -1  # 如果 key 不存在，回傳 -1
-        
-        # 如果 key 存在，把它移到最前面，代表最近使用
-        self.cache.move_to_end(key, last=False)
-        return self.cache[key]
+        """取得值，如果 key 存在，則返回 value，否則返回 -1"""
+        if key in self.cache:
+            # 先刪除舊的位置，再把 key 放到最前面（代表最近使用）
+            self.order.remove(key)
+            self.order.append(key)
+            return self.cache[key]
+        return -1
 
     def put(self, key: int, value: int) -> None:
+        """插入新值，若超過容量則刪除最舊的 key"""
         if key in self.cache:
-            # 如果 key 存在，先刪除舊的 key
-            self.cache.pop(key)
+            # 如果 key 已經存在，更新值，並且把它移到最近使用
+            self.order.remove(key)
+        elif len(self.cache) >= self.capacity:
+            # 如果超過容量，刪掉最久沒用的 key（最前面的）
+            oldest_key = self.order.pop(0)
+            del self.cache[oldest_key]
 
-        # 插入新的 key-value，並放到最前面
+        # 添加新的 key-value，並放到最近使用的位置
         self.cache[key] = value
-        self.cache.move_to_end(key, last=False)
-
-        # 如果超過容量，刪除最久沒用的（最後一個元素）
-        if len(self.cache) > self.capacity:
-            self.cache.popitem(last=True)  # 刪除最後面的 key
+        self.order.append(key)
