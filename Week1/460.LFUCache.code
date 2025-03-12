@@ -1,0 +1,47 @@
+class LFUCache:
+    def __init__(self, capacity: int):
+        self.capacity = capacity  # 最大容量
+        self.cache = {}  # 存 key: (value, 使用次數)
+        self.freq = {}  # 存 使用次數: OrderedDict(所有 key)
+        self.min_freq = 0  # 目前最小使用次數
+
+    def _update_freq(self, key):
+        """更新 key 的使用次數"""
+        value, freq = self.cache[key]  # 取得目前的值與使用次數
+        self.cache[key] = (value, freq + 1)  # 增加使用次數
+        
+        # 從舊的 freq 記錄中移除
+        self.freq[freq].pop(key)
+        if not self.freq[freq]:  # 如果該頻率沒有 key 了，刪除
+            del self.freq[freq]
+            if self.min_freq == freq:  # 如果這是最小頻率，更新 min_freq
+                self.min_freq += 1
+        
+        # 把 key 移動到新的 freq 記錄
+        self.freq.setdefault(freq + 1, OrderedDict())[key] = None
+
+    def get(self, key: int) -> int:
+        """取得 key，並增加使用次數"""
+        if key not in self.cache:
+            return -1
+        self._update_freq(key)  # 增加使用次數
+        return self.cache[key][0]  # 回傳 value
+
+    def put(self, key: int, value: int) -> None:
+        """新增或更新 key，並處理超過容量的情況"""
+        if self.capacity == 0:
+            return
+        
+        if key in self.cache:  # 如果 key 已存在，更新值並增加使用次數
+            self.cache[key] = (value, self.cache[key][1])
+            self._update_freq(key)
+            return
+
+        if len(self.cache) >= self.capacity:  # 快取已滿，刪除使用次數最少的 key
+            lfu_key, _ = self.freq[self.min_freq].popitem(last=False)  # 刪除最舊的 key
+            del self.cache[lfu_key]
+
+        # 插入新 key，並設使用次數為 1
+        self.cache[key] = (value, 1)
+        self.freq.setdefault(1, OrderedDict())[key] = None
+        self.min_freq = 1  # 新插入的 key 使用次數一定是 1，所以 min_freq 變回 1
