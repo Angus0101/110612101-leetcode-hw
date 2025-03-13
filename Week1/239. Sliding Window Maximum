@@ -1,0 +1,31 @@
+from collections import deque  # 確保導入 deque
+
+class Solution(object):
+    def maxSlidingWindow(self, nums, k):  # 需要正確縮排
+        res = []  # 存放結果
+        dq = deque()  # 使用雙端佇列
+
+        for i in range(len(nums)):
+            # 移除視窗外的元素
+            if dq and dq[0] < i - k + 1:
+                dq.popleft()
+
+            # 移除所有比當前元素小的元素（確保最大值在前）
+            while dq and nums[dq[-1]] < nums[i]:
+                dq.pop()
+
+            # 加入當前索引
+            dq.append(i)
+
+            # 當視窗形成時，把最大值加入結果
+            if i >= k - 1:
+                res.append(nums[dq[0]])  # 佇列的頭部是最大值索引
+
+        return res  # 回傳結果
+
+
+        # 當視窗形成時，把最大值加入結果
+        if i >= k - 1:
+            res.append(nums[dq[0]])  # 佇列的頭部是最大值索引
+    
+        return res
