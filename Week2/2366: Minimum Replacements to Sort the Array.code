@@ -1,0 +1,21 @@
+class Solution:
+    def minimumReplacement(self, nums: List[int]) -> int:
+        ans = 0  # 記錄總共的拆分次數
+        n = len(nums)  # 取得數組長度
+        mx = nums[-1]  # 記錄當前允許的最大值（從最後一個元素開始）
+
+        # 從倒數第二個元素開始，往左遍歷數組
+        for i in range(n - 2, -1, -1):
+            if nums[i] <= mx:
+                # 如果當前元素小於等於 mx，則不需要拆分，更新 mx 為 nums[i]
+                mx = nums[i]
+                continue  # 繼續處理前一個數
+
+            # 計算 `nums[i]` 需要拆成幾個部分，使得每個部分的最大值 ≤ `mx`
+            k = (nums[i] + mx - 1) // mx  # 向上取整計算拆分數量
+            ans += k - 1  # 需要進行 `k-1` 次拆分操作
+            
+            # 更新 mx 為拆分後的最大值，確保下一個數字 ≤ mx
+            mx = nums[i] // k  
+
+        return ans  # 回傳最少需要的拆分次數
