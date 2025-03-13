@@ -1,0 +1,18 @@
+class Solution:
+    def minSwapsCouples(self, row: List[int]) -> int:
+        def find(parent: int) -> int:
+            """ 查找 parent 陣列中的根節點，並使用路徑壓縮（Path Compression）優化 """
+            if union_find[parent] != parent:
+                union_find[parent] = find(union_find[parent])  # 路徑壓縮
+            return union_find[parent]
+
+        n = len(row) // 2  # 計算共有多少對（總人數除以2）
+        union_find = list(range(n))  # 初始化並查集，群組代表自己
+        
+        # 遍歷 row，每次處理一對情侶
+        for i in range(0, len(row), 2):
+            person1, person2 = row[i] // 2, row[i + 1] // 2  # 找到這兩個人的 "情侶編號"
+            union_find[find(person1)] = find(person2)  # 讓這對情侶合併成同一組
+            
+        # 計算最少交換次數，等於 群組總數 - 1
+        return n - sum(i == find(i) for i in range(n))
