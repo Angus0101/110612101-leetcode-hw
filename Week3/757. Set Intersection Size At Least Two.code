@@ -1,0 +1,27 @@
+#Greedy Algorithm
+
+class Solution:
+    def intersectionSizeTwo(self, intervals: List[List[int]]) -> int:
+        # **第一步：按照 end 升序排序，若 end 相同則 start 降序**
+        intervals.sort(key=lambda x: (x[1], -x[0]))
+
+        # 記錄選擇的最後兩個數
+        second_last, last = -1, -1
+        count = 0  # 記錄集合的大小
+
+        # 遍歷排序後的區間
+        for start, end in intervals:
+            # **情況 1：當前選擇的兩個數字完全不在區間內**
+            if start > last:
+                # 添加區間 `end-1` 和 `end` 這兩個數
+                second_last, last = end - 1, end
+                count += 2  # 加入兩個數
+
+            # **情況 2：僅有 last 在區間內，但 second_last 不在**
+            elif start > second_last:
+                # 只需要添加一個數 `end`
+                second_last, last = last, end
+                count += 1  # 加入一個數
+
+        return count
+        
