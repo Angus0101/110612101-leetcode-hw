@@ -1,0 +1,19 @@
+class Solution:
+    def jump(self, nums: List[int]) -> int:
+        n = len(nums)
+        jumps = 0  # 記錄跳躍次數
+        current_end = 0  # 當前能到達的最遠範圍
+        farthest = 0  # 記錄當前步數內可達的最遠位置
+
+        for i in range(n - 1):  # 遍歷 nums，最後一個元素不需要再跳
+            farthest = max(farthest, i + nums[i])  # 更新能跳到的最遠範圍
+            
+            if i == current_end:  # 到達當前跳躍範圍的邊界
+                jumps += 1  # 增加一次跳躍
+                current_end = farthest  # 更新跳躍的範圍
+                
+                if current_end >= n - 1:  # 如果已經可以到終點，提前返回
+                    break
+        
+        return jumps
+        
