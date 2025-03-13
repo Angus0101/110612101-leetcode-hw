@@ -1,0 +1,18 @@
+class Solution:
+    def numRescueBoats(self, people: List[int], limit: int) -> int:
+         # 排序
+        people.sort()  
+        #使用雙指針（Two Pointers）
+        #left = 0 → 指向最輕的人（people 陣列的開頭）
+        # 指向最重的人（people 陣列的結尾）
+        left, right = 0, len(people) - 1
+        boats = 0
+#嘗試讓最輕和最重的人搭同一艘船（減少船的數量）
+#如果最輕 + 最重 超過 limit，則讓最重的人單獨搭船
+        while left <= right:
+            if people[left] + people[right] <= limit:
+                left += 1  # 輕的人也上船
+            right -= 1  # 重的人上船
+            boats += 1
+
+        return boats
