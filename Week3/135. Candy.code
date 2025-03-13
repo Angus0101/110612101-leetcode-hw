@@ -1,1 +1,20 @@
+#兩遍掃描（Two-pass Greedy）
+class Solution:
+    def candy(self, ratings: List[int]) -> int:
+        n = len(ratings)  # 取得小孩數量
+        candies = [1] * n  # 初始化，每個小孩至少分配 1 顆糖
 
+        # **第一遍：從左到右，確保右邊孩子比左邊高的糖果多**
+        for i in range(1, n):
+            if ratings[i] > ratings[i - 1]:  # 如果右邊小孩評分比左邊高
+                candies[i] = candies[i - 1] + 1  # 右邊的糖果數要比左邊多 1 顆
+
+        # **第二遍：從右到左，確保左邊孩子比右邊高的糖果多**
+        for i in range(n - 2, -1, -1):  # 倒序遍歷，從倒數第二個小孩開始
+            if ratings[i] > ratings[i + 1]:  # 如果左邊小孩評分比右邊高
+                candies[i] = max(candies[i], candies[i + 1] + 1)  # 取最大值，確保糖果數符合規則
+
+        # **計算總糖果數**
+        return sum(candies)  # 回傳所有小孩的糖果總數
+
+        
