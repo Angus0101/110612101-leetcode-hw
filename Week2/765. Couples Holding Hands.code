@@ -1,18 +1,29 @@
 class Solution:
-    def minSwapsCouples(self, row: List[int]) -> int:
-        def find(parent: int) -> int:
-            """ 查找 parent 陣列中的根節點，並使用路徑壓縮（Path Compression） """
-            if union_find[parent] != parent:
-                union_find[parent] = find(union_find[parent])  # 路徑壓縮
-            return union_find[parent]
-
-        n = len(row) // 2  # 計算總共有多少對情侶（總人數除以 2）
-        union_find = list(range(n))  # 初始化並查集，每個群組的代表一開始是自己
-
-        # 遍歷 row，每次處理一對情侶
-        for i in range(0, len(row), 2):
-            person1, person2 = row[i] // 2, row[i + 1] // 2  # 找到這兩個人屬於哪個群組
-            union_find[find(person1)] = find(person2)  # 讓這對情侶合併成同一個群組
-
-        # 計算最少交換次數，等於「獨立群組總數 - 1」
-        return n - sum(i == find(i) for i in range(n))
+    def minSwapsCouples(self, row):
+        ans = 0  # 記錄交換次數
+        n = len(row)  # 總人數
+        
+        # 每對座位為一組，兩個兩個遍歷
+        for i in range(0, n, 2):
+            if row[i] % 2 == 0:  # 如果當前人是偶數
+                if row[i + 1] == row[i] + 1:  # 如果伴侶是正確的（應該是 +1）
+                    continue
+                else:
+                    # 找到正確的伴侶 (row[i] + 1) 並交換
+                    for j in range(i + 1, n):
+                        if row[j] == row[i] + 1:
+                            row[i + 1], row[j] = row[j], row[i + 1]
+                            break
+                    ans += 1  # 交換計數 +1
+            else:  # 如果當前人是奇數
+                if row[i + 1] == row[i] - 1:  # 如果伴侶是正確的（應該是 -1）
+                    continue
+                else:
+                    # 找到正確的伴侶 (row[i] - 1) 並交換
+                    for j in range(i + 1, n):
+                        if row[j] == row[i] - 1:
+                            row[i + 1], row[j] = row[j], row[i + 1]
+                            break
+                    ans += 1  # 交換計數 +1
+        
+        return ans  # 返回最少交換次數
