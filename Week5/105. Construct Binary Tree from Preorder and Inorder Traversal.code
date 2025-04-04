@@ -1,0 +1,27 @@
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val         # 節點的值
+        self.left = left       # 左子節點
+        self.right = right     # 右子節點
+
+class Solution:
+    def buildTree(self, preorder: List[int], inorder: List[int]) -> Optional[TreeNode]:
+        if not preorder or not inorder:
+            return None        # 若任一序列為空，則沒有樹可建，回傳 None
+
+        root_val = preorder[0]  # 前序遍歷第一個值是樹的根節點
+        root = TreeNode(root_val)  # 建立根節點的 TreeNode
+
+        idx = inorder.index(root_val)  # 找出根節點在中序遍歷中的位置
+
+        # 遞迴建立左子樹
+        # preorder[1:1+idx] 為左子樹的前序序列
+        # inorder[:idx] 為左子樹的中序序列
+        root.left = self.buildTree(preorder[1:1+idx], inorder[:idx])
+
+        # 遞迴建立右子樹
+        # preorder[1+idx:] 為右子樹的前序序列
+        # inorder[idx+1:] 為右子樹的中序序列
+        root.right = self.buildTree(preorder[1+idx:], inorder[idx+1:])
+
+        return root  # 回傳建構好的子樹根節點
