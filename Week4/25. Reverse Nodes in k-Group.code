@@ -1,0 +1,26 @@
+class Solution:
+    def reverseKGroup(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
+        # 1. 檢查是否有足夠的 k 個節點
+        curr = head             # curr 用來走訪後續節點，初始是 head
+        count = 0              # count 計數，看是否有至少 k 個節點
+        while curr and count < k:
+            curr = curr.next   # 每次往下一個節點走
+            count += 1         # 數一次
+
+        if count < k:
+            return head        # 如果不足 k 個節點，不反轉，直接返回原鏈結串列
+
+        # 2. 反轉這 k 個節點
+        prev = None            # prev 是反轉過的前一個節點，初始為 None
+        curr = head            # curr 回到開頭，準備開始反轉
+        for _ in range(k):     # 執行 k 次反轉操作
+            nxt = curr.next    # 先儲存 curr 的下一個節點，等下會修改 curr.next
+            curr.next = prev   # 指標反轉：curr 指向前一個節點
+            prev = curr        # prev 前進到 curr
+            curr = nxt         # curr 前進到下一個節點（還沒反轉的）
+
+        # 3. head 現在是這段的尾巴，要接上下一段反轉的結果
+        head.next = self.reverseKGroup(curr, k)  # 遞迴處理下一段，並接上去
+
+        # 4. prev 是反轉後的頭，回傳它
+        return prev            # 返回這一段反轉後的新頭
