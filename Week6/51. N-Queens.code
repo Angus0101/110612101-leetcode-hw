@@ -1,0 +1,43 @@
+from typing import List
+
+class Solution:
+    def solveNQueens(self, n: int) -> List[List[str]]:
+        res = []  # 存所有合法的解
+        board = [["."] * n for _ in range(n)]  # 建立一個 n x n 的空棋盤
+
+        def is_valid(row: int, col: int) -> bool:
+            # 檢查同一欄
+            for i in range(row):
+                if board[i][col] == "Q":
+                    return False
+            # 檢查左上對角線
+            i, j = row - 1, col - 1
+            while i >= 0 and j >= 0:
+                if board[i][j] == "Q":
+                    return False
+                i -= 1
+                j -= 1
+            # 檢查右上對角線
+            i, j = row - 1, col + 1
+            while i >= 0 and j < n:
+                if board[i][j] == "Q":
+                    return False
+                i -= 1
+                j += 1
+            return True  # 如果都沒事，這個位置是合法的
+
+        def backtrack(row: int):
+            if row == n:
+                # 轉成字符串列表，加到結果中
+                solution = ["".join(r) for r in board]
+                res.append(solution)
+                return
+            
+            for col in range(n):  # 在這一列的每一欄嘗試放皇后
+                if is_valid(row, col):
+                    board[row][col] = "Q"    # 放皇后
+                    backtrack(row + 1)       # 遞迴放下一列
+                    board[row][col] = "."    # 回溯：拿掉皇后換別的試
+
+        backtrack(0)
+        return res
