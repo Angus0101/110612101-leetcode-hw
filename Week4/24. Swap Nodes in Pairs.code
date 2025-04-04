@@ -1,0 +1,13 @@
+class Solution:
+    def swapPairs(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        if not head or not head.next:
+            return head  # 基本情況：當剩下一個節點或沒有節點時，直接返回
+
+        first = head          # 第一個節點
+        second = head.next    # 第二個節點
+
+        # 先讓 first 連結到遞迴後的結果，再交換 first 和 second
+        first.next = self.swapPairs(second.next)
+        second.next = first
+
+        return second  # 返回新的頭節點
