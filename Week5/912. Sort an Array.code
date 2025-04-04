@@ -1,0 +1,32 @@
+class Solution:
+    def sortArray(self, nums: List[int]) -> List[int]:
+        # 如果陣列長度為 1 或 0，已經是排序好的
+        if len(nums) <= 1:
+            return nums
+
+        # 將陣列從中間切成兩半
+        mid = len(nums) // 2
+        left = self.sortArray(nums[:mid])   # 對左半邊遞迴排序
+        right = self.sortArray(nums[mid:])  # 對右半邊遞迴排序
+
+        # 合併已排序的左右陣列
+        return self.merge(left, right)
+
+    def merge(self, left: List[int], right: List[int]) -> List[int]:
+        result = []  # 用來存放合併後的結果
+        i = j = 0    # i 走訪 left，j 走訪 right
+
+        # 當兩邊都還有東西時，依照大小依序放入 result
+        while i < len(left) and j < len(right):
+            if left[i] <= right[j]:
+                result.append(left[i])
+                i += 1
+            else:
+                result.append(right[j])
+                j += 1
+
+        # 把剩下的左邊或右邊的元素加進去（兩邊只會有一邊剩）
+        result.extend(left[i:])
+        result.extend(right[j:])
+
+        return result
