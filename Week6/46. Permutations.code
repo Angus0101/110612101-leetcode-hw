@@ -1,0 +1,25 @@
+from typing import List
+
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        res = []  # 存放所有結果的列表
+        path = []  # 當前排列路徑
+        used = [False] * len(nums)  # 用來記錄哪些數字已經被用過
+
+        def backtrack():
+            # 如果當前排列的長度等於原始 nums 長度，代表一個完整排列
+            if len(path) == len(nums):
+                res.append(path[:])  # 記得要加 path[:] 做深拷貝
+                return
+            
+            for i in range(len(nums)):
+                if used[i]:  # 如果這個數字用過了，就跳過
+                    continue
+                path.append(nums[i])  # 選擇這個數字
+                used[i] = True        # 標記為已使用
+                backtrack()           # 遞迴繼續選下一個數字
+                path.pop()            # 回溯：把剛剛加入的數字移除
+                used[i] = False       # 回溯：標記為未使用
+
+        backtrack()  # 從空路徑開始遞迴
+        return res
