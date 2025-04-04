@@ -1,0 +1,29 @@
+import heapq
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+class Solution:  # ✅ 關鍵：LeetCode 會找這個類別！
+    def mergeKLists(self, lists):
+        heap = []
+
+        # 將每條鏈結串列的第一個節點放入堆中
+        for i, node in enumerate(lists):
+            if node:
+                heapq.heappush(heap, (node.val, i, node))  # 加入堆：(值, 編號, 節點)
+
+        dummy = ListNode(0)
+        curr = dummy
+
+        # 逐一取出最小節點並接上去
+        while heap:
+            val, i, node = heapq.heappop(heap)
+            curr.next = node
+            curr = curr.next
+
+            if node.next:
+                heapq.heappush(heap, (node.next.val, i, node.next))
+
+        return dummy.next
