@@ -1,9 +1,3 @@
-class TreeNode:
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val         # 節點的值
-        self.left = left       # 左子節點
-        self.right = right     # 右子節點
-
 class Solution:
     def buildTree(self, preorder: List[int], inorder: List[int]) -> Optional[TreeNode]:
         if not preorder or not inorder:
