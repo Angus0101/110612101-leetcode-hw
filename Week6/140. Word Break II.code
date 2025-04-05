@@ -1,0 +1,31 @@
+from typing import List
+
+class Solution:
+    def wordBreak(self, s: str, wordDict: List[str]) -> List[str]:
+        word_set = set(wordDict)  # 為了加快查詢速度，用 set 儲存字典
+        memo = {}  # 用來記錄每個子字串的解，避免重複計算
+
+        def dfs(start: int) -> List[str]:
+            if start in memo:
+                return memo[start]  # 如果之前算過了，直接回傳
+
+            if start == len(s):
+                return [""]  # 代表已經走到底，回傳空字串作為終止點
+
+            res = []  # 收集從這個 start 出發能產生的所有句子
+
+            for end in range(start + 1, len(s) + 1):
+                word = s[start:end]  # 從 start 切到 end 的這段字
+                if word in word_set:
+                    # 對剩下的字串做 dfs
+                    rest_sentences = dfs(end)
+                    for sub in rest_sentences:
+                        if sub:  # 如果子句不是空的，就加空格
+                            res.append(word + " " + sub)
+                        else:    # 如果子句是空的，代表這是最後一段
+                            res.append(word)
+
+            memo[start] = res  # 記錄結果
+            return res
+
+        return dfs(0)  # 從 index 0 開始切
