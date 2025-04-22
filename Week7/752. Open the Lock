@@ -1,0 +1,29 @@
+class Solution:
+    def openLock(self, deadends: list[str], target: str) -> int:
+        dead_set = set(deadends)
+        visited = set("0000")
+
+        if "0000" in dead_set:
+            return -1
+
+        queue = deque([("0000", 0)])  # (目前的組合, 轉動次數)
+
+        while queue:
+            curr, steps = queue.popleft()
+
+            if curr == target:
+                return steps
+
+            for i in range(4):  # 每個輪子位置
+                for move in [-1, 1]:  # 向前轉或向後轉
+                    digit = int(curr[i])
+                    new_digit = (digit + move) % 10  # 0→9 or 9→0 都能轉
+                    next_combo = curr[:i] + str(new_digit) + curr[i+1:]
+
+                    # 若沒被走過且不是死路，就加入隊列
+                    if next_combo not in visited and next_combo not in dead_set:
+                        visited.add(next_combo)
+                        queue.append((next_combo, steps + 1))
+
+        # 若整個搜索都沒找到目標，回傳 -1
+        return -1
