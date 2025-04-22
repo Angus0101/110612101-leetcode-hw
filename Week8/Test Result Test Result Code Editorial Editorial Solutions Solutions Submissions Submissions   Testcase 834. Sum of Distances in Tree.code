@@ -1,0 +1,33 @@
+class Solution:
+    def sumOfDistancesInTree(self, n: int, edges: list[list[int]]) -> list[int]:
+        from collections import defaultdict
+
+        # 鄰接表建圖
+        tree = defaultdict(list)
+        for u, v in edges:
+            tree[u].append(v)
+            tree[v].append(u)
+
+        res = [0] * n      # 存答案
+        count = [1] * n    # 子樹節點數（初始為 1 表示自己）
+
+        # 第一次 DFS：計算 count[] 與 res[0]
+        def dfs1(node, parent):
+            for neighbor in tree[node]:
+                if neighbor != parent:
+                    dfs1(neighbor, node)
+                    count[node] += count[neighbor]
+                    res[node] += res[neighbor] + count[neighbor]
+
+        # 第二次 DFS：根據 parent 推算 child 的 res 值
+        def dfs2(node, parent):
+            for neighbor in tree[node]:
+                if neighbor != parent:
+                    # 推算公式核心：把「重心」往下轉移
+                    res[neighbor] = res[node] - count[neighbor] + (n - count[neighbor])
+                    dfs2(neighbor, node)
+
+        dfs1(0, -1)
+        dfs2(0, -1)
+
+        return res
