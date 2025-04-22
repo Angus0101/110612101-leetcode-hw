@@ -1,0 +1,16 @@
+class Solution:
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        # 若根節點為 None 或等於 p/q，直接回傳
+        if not root or root == p or root == q:
+            return root
+
+        # 遞迴搜尋左子樹與右子樹
+        left = self.lowestCommonAncestor(root.left, p, q)
+        right = self.lowestCommonAncestor(root.right, p, q)
+
+        # 如果左右子樹各找到一個（left 和 right 都不是 None），這個 root 就是最近公共祖先
+        if left and right:
+            return root
+
+        # 否則，只回傳存在的那一邊（不是 None 的那一邊）
+        return left if left else right
