@@ -1,0 +1,29 @@
+class Solution:
+    def coinChange(self, coins: list[int], amount: int) -> int:
+        # 若金額為 0，不需要任何硬幣
+        if amount == 0:
+            return 0
+
+        # 建立 visited 集合，避免重複訪問
+        visited = set()
+        
+        # BFS 初始隊列：(當前金額, 已使用的硬幣數)
+        queue = deque([(0, 0)])
+
+        while queue:
+            curr_amount, steps = queue.popleft()
+
+            for coin in coins:
+                next_amount = curr_amount + coin
+
+                # 若剛好湊到 amount，回傳所需硬幣數
+                if next_amount == amount:
+                    return steps + 1
+
+                # 若未超出目標金額且沒被訪問過，加入隊列
+                if 0 < next_amount <= amount and next_amount not in visited:
+                    visited.add(next_amount)
+                    queue.append((next_amount, steps + 1))
+
+        # 無法湊出目標金額，回傳 -1
+        return -1
