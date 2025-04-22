@@ -1,0 +1,35 @@
+class Solution:
+    def numBusesToDestination(self, routes: list[list[int]], source: int, target: int) -> int:
+        if source == target:
+            return 0
+
+        # 建立 stop -> buses 的對應表
+        stop_to_buses = defaultdict(set)
+        for i, route in enumerate(routes):
+            for stop in route:
+                stop_to_buses[stop].add(i)
+
+        # 初始化 BFS
+        visited_stops = set()
+        visited_buses = set()
+        queue = deque([(source, 0)])  # (目前車站, 已搭巴士數)
+
+        while queue:
+            stop, buses_taken = queue.popleft()
+
+            if stop == target:
+                return buses_taken
+
+            # 嘗試所有可搭的巴士
+            for bus in stop_to_buses[stop]:
+                if bus in visited_buses:
+                    continue
+                visited_buses.add(bus)
+
+                # 該巴士所有車站都能到
+                for next_stop in routes[bus]:
+                    if next_stop not in visited_stops:
+                        visited_stops.add(next_stop)
+                        queue.append((next_stop, buses_taken + 1))
+
+        return -1
