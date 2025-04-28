@@ -1,0 +1,11 @@
+class Solution:
+    def paintWalls(self, cost, time):
+        n = len(cost)
+        dp = [float('inf')] * (n + 1)
+        dp[0] = 0  # 不刷任何牆花費是 0
+
+        for j in range(n):  # 遍歷每面牆
+            for i in range(n, 0, -1):  # 從後往前更新，避免重複覆蓋
+                dp[i] = min(dp[i], dp[max(0, i - time[j] - 1)] + cost[j])
+
+        return dp[n]
