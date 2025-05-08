@@ -1,0 +1,41 @@
+class Solution:
+    def findRedundantDirectedConnection(self, edges: List[List[int]]) -> List[int]:
+        n = len(edges)
+        parent = [0] * (n + 1)
+        cand1 = None
+        cand2 = None
+
+        # Step 1: 檢查是否有節點有兩個父節點
+        for u, v in edges:
+            if parent[v] == 0:
+                parent[v] = u
+            else:
+                # 發現 v 已經有一個父節點了 → 雙父情況
+                cand1 = [parent[v], v]  # 第一條指向 v 的邊
+                cand2 = [u, v]          # 第二條指向 v 的邊（後出現的）
+                break
+
+        # Step 2: 初始化 Union-Find
+        def find(uf, x):
+            while uf[x] != x:
+                uf[x] = uf[uf[x]]  # 路徑壓縮
+                x = uf[x]
+            return x
+
+        uf = list(range(n + 1))  # 每個節點自己是自己的代表
+
+        # Step 3: 執行 Union，檢查是否出現 cycle
+        for u, v in edges:
+            if [u, v] == cand2:
+                continue  # 暫時略過 cand2，模擬刪除它
+
+            ru, rv = find(uf, u), find(uf, v)
+            if ru == rv:
+                # 發現成環
+                if cand1:
+                    return cand1  # 同時有雙父 → 回傳 cand1
+                return [u, v]      # 沒有雙父 → 回傳造成 cycle 的這條邊
+            uf[rv] = ru  # Union 合併集合
+
+        # 如果沒有成環，表示只需要刪除 cand2
+        return cand2
