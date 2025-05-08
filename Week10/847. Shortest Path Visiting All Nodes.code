@@ -1,0 +1,32 @@
+class Solution:
+    def shortestPathLength(self, graph: List[List[int]]) -> int:
+        n = len(graph)  # 節點總數
+        if n == 1:
+            return 0  # 只有一個節點，不需移動
+
+        queue = deque()
+        visited = set()
+
+        # 初始化：每個節點都可以作為起點加入 queue
+        for i in range(n):
+            state = 1 << i  # bitmask: 只拜訪了第 i 個節點，例如 i=2 時 state=0b100
+            queue.append((i, state, 0))  # (目前在第 i 個節點, 拜訪狀態, 目前步數為 0)
+            visited.add((i, state))  # 記錄此狀態避免重複
+
+        target = (1 << n) - 1  # 目標狀態：所有節點都拜訪過，例如 n=3 時 target=0b111
+
+        while queue:
+            node, state, steps = queue.popleft()
+            
+            # 若已拜訪所有節點，回傳步數
+            if state == target:
+                return steps
+
+            # 嘗試往相鄰節點前進
+            for neighbor in graph[node]:
+                next_state = state | (1 << neighbor)  # 新狀態 = 加上 neighbor 節點的拜訪紀錄
+
+                # 若此狀態未曾出現過，則加入 queue
+                if (neighbor, next_state) not in visited:
+                    visited.add((neighbor, next_state))
+                    queue.append((neighbor, next_state, steps + 1))  # 步數加 1
