@@ -1,0 +1,41 @@
+class Solution:
+    def findOrder(self, numCourses: int, prerequisites: List[List[int]]) -> List[int]:
+        # 建立圖的鄰接表：key 是課程，value 是這門課程的後續課程
+        graph = defaultdict(list)
+        for dest, src in prerequisites:
+            graph[src].append(dest)  # 要先修 src 才能修 dest
+
+        visited = [0] * numCourses  # 記錄每門課的訪問狀態：0=未訪問, 1=訪問中, 2=已完成
+        result = []                 # 最終修課順序（拓撲排序結果）
+        self.has_cycle = False     # 偵測是否存在環（無法完成所有課程）
+
+        # 定義 DFS 函數
+        def dfs(course):
+            if visited[course] == 1:
+                # 如果目前正在訪問這門課，代表出現了環
+                self.has_cycle = True
+                return
+            if visited[course] == 2:
+                # 如果這門課已經訪問完成，直接跳過
+                return
+            
+            # 標記為訪問中
+            visited[course] = 1
+            # 遞迴訪問所有後續課程
+            for neighbor in graph[course]:
+                dfs(neighbor)
+            # 標記為訪問完成
+            visited[course] = 2
+            # 將這門課加入結果（注意：是回溯時加入，表示它在最前面）
+            result.append(course)
+
+        # 對每門課執行 DFS
+        for i in range(numCourses):
+            if visited[i] == 0:
+                dfs(i)
+            if self.has_cycle:
+                # 如果發現有環，無法完成課程，回傳空陣列
+                return []
+
+        # 回傳修課順序（記得要反轉）
+        return result[::-1]
