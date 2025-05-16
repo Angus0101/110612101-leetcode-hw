@@ -1,0 +1,21 @@
+class Solution:
+    def maxCoins(self, nums: List[int]) -> int:
+        # 前後加上 1 作為 dummy 氣球
+        nums = [1] + nums + [1]
+        n = len(nums)
+
+        # 初始化 dp 表格，dp[i][j] 表示戳破區間 (i, j) 之間氣球能獲得的最大硬幣數
+        dp = [[0] * n for _ in range(n)]
+
+        # 區間長度從 2 開始（因為至少要有空間夾住一個氣球）
+        for length in range(2, n):
+            for left in range(0, n - length):
+                right = left + length
+                for k in range(left + 1, right):  # k 是最後戳破的氣球位置
+                    dp[left][right] = max(
+                        dp[left][right],
+                        nums[left] * nums[k] * nums[right] + dp[left][k] + dp[k][right]
+                    )
+
+        # 回傳從 (0, n-1) 區間中戳破全部氣球能獲得的最大值
+        return dp[0][n - 1]
