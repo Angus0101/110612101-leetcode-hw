@@ -1,0 +1,76 @@
+class ExamRoom:
+    def __init__(self, N: int):
+        # 初始化考場，N 是座位數量 (0 到 N-1)
+        self.N = N
+        self.heap = []  # 儲存空區間的最大堆（用負距離表示）
+        self.avail_first = {}  # key: 起點，value: 對應區間
+        self.avail_last = {}   # key: 終點，value: 對應區間
+        self.put_segment(0, N - 1)  # 初始將整個教室區間放入堆中
+
+    def put_segment(self, first: int, last: int) -> None:
+        # 根據區間 [first, last] 計算優先度（距離最近人的最遠距離）
+        if first == 0 or last == self.N - 1:
+            priority = last - first
+        else:
+            priority = (last - first) // 2
+
+        # 建立區間：[-priority, first, last, is_valid]
+        segment = [-priority, first, last, True]
+
+        # 分別記錄區間的起點與終點
+        self.avail_first[first] = segment
+        self.avail_last[last] = segment
+
+        # 推入最大堆中
+        heappush(self.heap, segment)
+
+    def seat(self) -> int:
+        # 學生入座：選擇最大距離的中點
+        while True:
+            _, first, last, is_valid = heappop(self.heap)
+            if is_valid:
+                del self.avail_first[first]
+                del self.avail_last[last]
+                break  # 找到有效區間即退出
+
+        # 根據座位區間位置決定實際入座位置
+        if first == 0:
+            seat = 0
+            if first != last:
+                self.put_segment(first + 1, last)
+
+        elif last == self.N - 1:
+            seat = last
+            if first != last:
+                self.put_segment(first, last - 1)
+
+        else:
+            seat = first + (last - first) // 2
+            if seat > first:
+                self.put_segment(first, seat - 1)
+            if seat < last:
+                self.put_segment(seat + 1, last)
+
+        return seat
+
+    def leave(self, p: int) -> None:
+        # 學生離開座位 p，並合併左右相鄰區間
+        first = p
+        last = p
+        left = p - 1
+        right = p + 1
+
+        # 若左邊有空區間，合併並標記為失效
+        if left >= 0 and left in self.avail_last:
+            segment_left = self.avail_last.pop(left)
+            segment_left[3] = False
+            first = segment_left[1]
+
+        # 若右邊有空區間，合併並標記為失效
+        if right < self.N and right in self.avail_first:
+            segment_right = self.avail_first.pop(right)
+            segment_right[3] = False
+            last = segment_right[2]
+
+        # 插入新的合併後區間
+        self.put_segment(first, last)
