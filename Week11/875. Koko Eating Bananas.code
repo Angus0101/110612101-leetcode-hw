@@ -1,0 +1,18 @@
+class Solution:
+    def minEatingSpeed(self, piles: List[int], h: int) -> int:
+        left = 1
+        right = max(piles)  # 最快速度為吃完最大堆的香蕉數
+
+        while left < right:
+            mid = (left + right) // 2
+            # 計算吃完所有香蕉需要的總時間
+            total_hours = sum((pile + mid - 1) // mid for pile in piles)
+
+            if total_hours <= h:
+                # 時間夠，試看看能不能更慢（找更小的 k）
+                right = mid
+            else:
+                # 時間不夠，速度太慢，往右邊找（更大的 k）
+                left = mid + 1
+
+        return left  # 最小可行的吃香蕉速度
