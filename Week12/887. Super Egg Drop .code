@@ -1,0 +1,12 @@
+class Solution:
+    def superEggDrop(self, k: int, n: int) -> int:
+        # dp[i][m] 表示 i 顆蛋、最多試 m 次，最多能確認多少層樓
+        dp = [ [0] * (n + 1) for _ in range(k + 1) ]
+        m = 0
+        # 持續增加 m，直到 dp[k][m] >= n，代表足夠查明所有樓層
+        while dp[k][m] < n:
+            m += 1
+            for i in range(1, k + 1):
+                # 遞推公式：dp[i][m] = dp[i-1][m-1] + dp[i][m-1] + 1
+                dp[i][m] = dp[i-1][m-1] + dp[i][m-1] + 1
+        return m
