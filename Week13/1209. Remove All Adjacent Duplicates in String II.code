@@ -1,0 +1,14 @@
+class Solution:
+    def removeDuplicates(self, s: str, k: int) -> str:
+        stack = []  # 用來記錄 (字元, 出現次數)
+
+        for ch in s:
+            if stack and stack[-1][0] == ch:
+                stack[-1][1] += 1  # 相同字元，次數 +1
+                if stack[-1][1] == k:
+                    stack.pop()  # 出現 k 次就移除
+            else:
+                stack.append([ch, 1])  # 不同字元，加入新紀錄
+
+        # 重建結果字串
+        return ''.join(ch * count for ch, count in stack)
