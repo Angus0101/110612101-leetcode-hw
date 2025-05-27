@@ -1,0 +1,36 @@
+class FreqStack:
+
+    def __init__(self):
+        # 紀錄每個元素出現的頻率
+        self.freq_map = defaultdict(int)
+
+        # 根據頻率存放元素的堆疊，每個頻率一個 stack
+        self.group_stack = defaultdict(list)
+
+        # 目前的最大頻率
+        self.max_freq = 0
+
+    def push(self, val: int) -> None:
+        # 更新 val 的出現頻率
+        self.freq_map[val] += 1
+        freq = self.freq_map[val]
+
+        # 如果新的頻率超過當前最大頻率，就更新最大頻率
+        if freq > self.max_freq:
+            self.max_freq = freq
+
+        # 將元素推入對應頻率的 stack
+        self.group_stack[freq].append(val)
+
+    def pop(self) -> int:
+        # 拿出最大頻率對應的 stack 中最上面的元素
+        val = self.group_stack[self.max_freq].pop()
+
+        # 將該元素的頻率減 1
+        self.freq_map[val] -= 1
+
+        # 如果這個頻率的 stack 已經空了，就把 max_freq 減 1
+        if not self.group_stack[self.max_freq]:
+            self.max_freq -= 1
+
+        return val
