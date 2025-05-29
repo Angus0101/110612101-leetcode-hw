@@ -1,0 +1,28 @@
+class Solution:
+    def containsNearbyAlmostDuplicate(self, nums: List[int], indexDiff: int, valueDiff: int) -> bool:
+        # 如果 valueDiff 為負數，不可能有符合條件的數對，直接回傳 False
+        if valueDiff < 0:
+            return False
+
+        # 使用 SortedList 維護一個動態有序的視窗（最多 k 個元素）
+        window = SortedList()
+
+        # 遍歷每個 nums[i]
+        for i in range(len(nums)):
+            # 如果視窗大小已經超過 indexDiff，移除最舊的元素（保持 i - j <= indexDiff）
+            if i > indexDiff:
+                window.remove(nums[i - indexDiff - 1])
+                # 移除索引超過範圍的元素（例如 i=4, indexDiff=3，就要移除 i=0 的元素）
+
+            # 使用二分搜尋找出大於等於 nums[i] - valueDiff 的最小元素的位置
+            pos = window.bisect_left(nums[i] - valueDiff)
+
+            # 檢查該位置是否存在元素，且差值在 valueDiff 範圍內
+            if pos < len(window) and abs(window[pos] - nums[i]) <= valueDiff:
+                return True  # 找到了符合條件的數對 (i, j)
+
+            # 將當前數字加入視窗
+            window.add(nums[i])
+
+        # 遍歷完畢都沒找到符合條件的數對，回傳 False
+        return False
